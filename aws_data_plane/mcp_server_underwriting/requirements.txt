@@ -1,0 +1,5 @@
+fastmcp>=4.1.0
+boto3>=1.35.0
+psycopg2-binary>=2.9.9
+pydantic>=2.8.0
+python-dotenv>=1.0.0

@@ -1,0 +1,8 @@
+{
+  "remote_agent_runtime_id": "projects/121190797389/locations/us-central1/reasoningEngines/4791592783888515072",
+  "deployment_timestamp": "2026-10-21T04:09:46.302497+00:00",
+  "deployment_target": "agent_runtime",
+  "is_a2a": true,
+  "language": "python",
+  "agent_directory": "gcp_control_plane"
+}

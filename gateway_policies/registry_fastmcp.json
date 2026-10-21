@@ -1,0 +1,45 @@
+{
+  "registry_version": "v1.0",
+  "service_id": "aws-servicing-fastmcp-gateway",
+  "display_name": "AWS Servicing FastMCP Gateway",
+  "description": "Exposes core lending accounts, vehicle title storage in S3, and origination in Aurora PostgreSQL.",
+  "endpoint": {
+    "transport": "Streamable HTTP",
+    "base_url": "https://aws-mcp-internal.corp:8000/sse",
+    "region": "us-east-2"
+  },
+  "authentication": {
+    "type": "WORKLOAD_IDENTITY_FEDERATION",
+    "aws_role_arn": "arn:aws:iam::123456789012:role/gcp-mcp-invoker-role"
+  },
+  "governed_tools": [
+    {
+      "tool_name": "get_customer_snapshot",
+      "access_level": "READ_ONLY",
+      "target_system": "Amazon Aurora PostgreSQL (iamsouvik-demo-aurora-cluster)",
+      "rate_limit_per_min": 600,
+      "audit_logging": true
+    },
+    {
+      "tool_name": "upload_vehicle_title",
+      "access_level": "WRITE_SECURE_VAULT",
+      "target_system": "Amazon S3 (iamsouvik-demo-bucket)",
+      "max_payload_bytes": 10485760,
+      "audit_logging": true
+    },
+    {
+      "tool_name": "verify_vehicle_title",
+      "access_level": "READ_ONLY",
+      "target_system": "NMVTIS Registry & Aurora DB",
+      "rate_limit_per_min": 300,
+      "audit_logging": true
+    },
+    {
+      "tool_name": "submit_signed_renewal",
+      "access_level": "WRITE_FINANCIAL_LEDGER",
+      "target_system": "Amazon Aurora PostgreSQL (iamsouvik-demo-aurora-cluster)",
+      "requires_human_esignature": true,
+      "audit_logging": true
+    }
+  ]
+}

@@ -1,0 +1,44 @@
+gateway:
+  name: enterprise-lending-agent-gateway
+  listen_port: 443
+  tls:
+    mode: MUTUAL_TLS
+    client_ca_cert: /etc/ssl/certs/enterprise-corporate-ca.crt
+
+model_armor:
+  enabled: true
+  inspection_profile: financial_services_strict
+  filters:
+    # 1. Prompt Injection & Jailbreak Defense
+    jailbreak_prevention:
+      action: BLOCK
+      sensitivity: HIGH
+      custom_prohibitions:
+        - "override credit policy"
+        - "ignore apr limits"
+        - "bypass title verification"
+        - "ignore TILA disclosure"
+    
+    # 2. PII Detection & Tokenization
+    pii_masking:
+      action: TOKENIZE
+      entities:
+        - SSN
+        - CREDIT_CARD_NUMBER
+        - DRIVERS_LICENSE
+        - BANK_ROUTING_NUMBER
+      token_format: "[REDACTED_{ENTITY_TYPE}_{HASH}]"
+
+    # 3. Content Safety & Non-Financial Guardrails
+    content_filter:
+      hate_speech: BLOCK_LOW_AND_ABOVE
+      harassment: BLOCK_LOW_AND_ABOVE
+      dangerous_content: BLOCK_LOW_AND_ABOVE
+
+routing:
+  - path: /v2/workflows/refinance
+    target_service: geap-refinance-engine
+    timeout_ms: 10000
+    retry_policy:
+      max_retries: 2
+      backoff_multiplier: 1.5
